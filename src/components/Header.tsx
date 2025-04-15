@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Calendar, Menu, X, Brain, Trophy, LayoutDashboard } from 'lucide-react';
+import { Home, Users, Calendar, ChartBar, Settings, LayoutDashboard } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import Logo from './Logo';
 import FancyNavigation from './FancyNavigation';
@@ -24,8 +24,11 @@ const Header = () => {
   }, []);
   
   const navLinks = [
+    { text: "Főoldal", href: "/", icon: <Home className="w-4 h-4" /> },
+    { text: "Csapatok", href: "/teams", icon: <Users className="w-4 h-4" /> },
     { text: "Mérkőzések", href: "/matches", icon: <Calendar className="w-4 h-4" /> },
-    { text: "V-Sports Elemzés", href: "/analysis", icon: <Brain className="w-4 h-4" /> },
+    { text: "Statisztika", href: "/statistics", icon: <ChartBar className="w-4 h-4" /> },
+    { text: "Rendszer", href: "/system", icon: <Settings className="w-4 h-4" /> },
     { text: "Vezérlőpult", href: "/dashboard", icon: <LayoutDashboard className="w-4 h-4" /> },
   ];
 
@@ -38,15 +41,6 @@ const Header = () => {
       <div className="container px-4 mx-auto flex items-center justify-between">
         <Logo />
         <FancyNavigation navLinks={navLinks} />
-        
-        {/* Mobile Menu Toggle */}
-        <button 
-          className="md:hidden flex items-center justify-center w-10 h-10 text-gray-200 bg-gray-900/50 backdrop-blur-sm border border-white/10 rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.15)]"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label="Toggle mobile menu"
-        >
-          {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
       </div>
       
       {/* Mobile Menu */}
