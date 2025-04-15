@@ -15,7 +15,7 @@ const PredictionSystem = () => {
     { 
       homeTeam: "Liverpool", 
       awayTeam: "Chelsea", 
-      prediction: "home", 
+      prediction: "home" as const, 
       confidence: 76, 
       homeGoals: 2.1, 
       awayGoals: 0.8, 
@@ -24,7 +24,7 @@ const PredictionSystem = () => {
     { 
       homeTeam: "Vörös Ördögök", 
       awayTeam: "Manchester Kék", 
-      prediction: "draw", 
+      prediction: "draw" as const, 
       confidence: 68, 
       homeGoals: 1.2, 
       awayGoals: 1.3, 
@@ -33,7 +33,7 @@ const PredictionSystem = () => {
     { 
       homeTeam: "Tottenham", 
       awayTeam: "London Ágyúk", 
-      prediction: "away", 
+      prediction: "away" as const, 
       confidence: 64, 
       homeGoals: 1.0, 
       awayGoals: 1.8, 
@@ -42,7 +42,7 @@ const PredictionSystem = () => {
     { 
       homeTeam: "Wolverhampton", 
       awayTeam: "Everton", 
-      prediction: "home", 
+      prediction: "home" as const, 
       confidence: 72, 
       homeGoals: 1.7, 
       awayGoals: 0.6, 
