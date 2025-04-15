@@ -1,34 +1,13 @@
-import React, { useEffect, useState } from 'react';
+
+import React, { useEffect } from 'react';
 import Header from '../components/Header';
 import HeroSection from '../components/HeroSection';
 import MatchSelectionSection from '../components/match-selection/MatchSelectionSection';
 import CallToAction from '../components/CallToAction';
 import Footer from '../components/Footer';
 import TopPredictions from '../components/TopPredictions';
-import { Team } from '../data/premier-league-teams';
 
 const Index = () => {
-  // State to track selected matches
-  const [selectedMatches, setSelectedMatches] = useState<{ home: Team | null; away: Team | null }[]>([]);
-  const [allMatchesSelected, setAllMatchesSelected] = useState(false);
-  
-  // Listen for a custom event from MatchSelectionSection
-  useEffect(() => {
-    const handleMatchesSelected = (event: CustomEvent) => {
-      const { matches, complete } = event.detail;
-      setSelectedMatches(matches);
-      setAllMatchesSelected(complete);
-    };
-    
-    // Register the event listener
-    window.addEventListener('matchesSelected' as any, handleMatchesSelected as any);
-    
-    // Cleanup
-    return () => {
-      window.removeEventListener('matchesSelected' as any, handleMatchesSelected as any);
-    };
-  }, []);
-
   // Scroll to top on page load
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -50,10 +29,11 @@ const Index = () => {
         <section id="match-selection">
           <MatchSelectionSection />
         </section>
+        <section id="predictions">
+          <TopPredictions />
+        </section>
         <section id="call-to-action">
-          <CallToAction showMatchResults={allMatchesSelected} matches={selectedMatches}>
-            {!allMatchesSelected && <TopPredictions />}
-          </CallToAction>
+          <CallToAction />
         </section>
       </main>
       <Footer />
