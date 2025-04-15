@@ -1,11 +1,10 @@
-
 import React, { useState, useMemo, useEffect } from 'react';
-import { Calendar, ArrowRight } from 'lucide-react';
-import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
 import { PREMIER_LEAGUE_TEAMS } from '../../data/premier-league-teams';
 import MatchCardGrid from './MatchCardGrid';
 import PredictionResultsSection from './PredictionResultsSection';
+import MatchSelectionHeader from './MatchSelectionHeader';
+import MatchSubmitButton from './MatchSubmitButton';
 
 const MatchSelectionSection = () => {
   // State for selected teams in each match card (now 8 matches with none selected by default)
@@ -81,10 +80,8 @@ const MatchSelectionSection = () => {
       return updated;
     });
   };
-  
-  // Handle prediction submission
+
   const handleSubmitPredictions = () => {
-    // Count how many complete matches we have
     const completeMatches = selectedTeams.filter(match => match.home && match.away).length;
     
     if (completeMatches === 0) {
@@ -108,38 +105,16 @@ const MatchSelectionSection = () => {
       </div>
       
       <div className="container mx-auto px-4 relative z-10">
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-10">
-          <div className="animate-fade-in">
-            <div className="inline-flex items-center gap-2.5 mb-3 bg-gradient-to-r from-blue-500/10 to-transparent px-4 py-2 rounded-full">
-              <Calendar className="w-5 h-5 text-blue-400" />
-              <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
-                Mérkőzések kiválasztása
-              </h2>
-            </div>
-          </div>
-        </div>
+        <MatchSelectionHeader />
         
-        {/* Match Selection Grid */}
         <MatchCardGrid 
           selectedTeams={selectedTeams}
           availableTeams={availableTeams}
           onTeamSelect={handleTeamSelect}
         />
         
-        {/* Prediction Button */}
-        <div className="flex justify-center my-8 animate-fade-in" style={{animationDelay: "0.5s"}}>
-          <Button 
-            onClick={handleSubmitPredictions}
-            className="w-full max-w-xl py-6 text-lg font-medium bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg flex items-center justify-center gap-2 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25 overflow-hidden relative group"
-          >
-            <span className="z-10 relative">Predikciók futtatása</span>
-            <ArrowRight className="w-5 h-5 z-10 relative group-hover:translate-x-1 transition-transform duration-300" />
-            <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-20 group-hover:animate-shine" />
-          </Button>
-        </div>
+        <MatchSubmitButton onClick={handleSubmitPredictions} />
         
-        {/* Predictions Results Section */}
         {predictionRun && selectedTeams.some(match => match.home && match.away) && !allMatchesCompleted && (
           <PredictionResultsSection 
             selectedTeams={selectedTeams.filter(match => match.home && match.away)} 
