@@ -1,21 +1,14 @@
-
 import { useState } from "react";
 import { fetchAllJsxFiles, fetchFileContent, parseGitHubUrl } from "@/lib/utils/githubFetcher";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Loader2, Github, FolderTree, AlertTriangle } from "lucide-react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+import { Github, Loader2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertTriangle } from "lucide-react";
+import RepoInputForm from "./github/RepoInputForm";
+import FileList from "./github/FileList";
+import ExampleRepos from "./github/ExampleRepos";
 
 interface GitHubImporterProps {
   onFilesLoad: (files: { name: string; content: string }[]) => void;
@@ -126,56 +119,16 @@ const GitHubImporter = ({ onFilesLoad }: GitHubImporterProps) => {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <div>
-            <label htmlFor="repoUrl" className="text-sm font-medium block mb-1">
-              Repository URL
-            </label>
-            <div className="flex gap-2">
-              <Input
-                id="repoUrl"
-                placeholder="https://github.com/felhasznalo/repo"
-                value={repoUrl}
-                onChange={(e) => setRepoUrl(e.target.value)}
-              />
-              <Button onClick={handleSearch} disabled={isLoading || !repoUrl}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Keresés...
-                  </>
-                ) : (
-                  "Keresés"
-                )}
-              </Button>
-            </div>
-            <div className="mt-1">
-              <label htmlFor="searchPath" className="text-sm font-medium block mb-1">
-                Útvonal a repository-n belül (opcionális)
-              </label>
-              <Input
-                id="searchPath"
-                placeholder="src/components"
-                value={searchPath}
-                onChange={(e) => setSearchPath(e.target.value)}
-              />
-            </div>
-
-            <div className="mt-4">
-              <label htmlFor="githubToken" className="text-sm font-medium block mb-1">
-                GitHub Access Token (opcionális, API rate limit növelésére)
-              </label>
-              <Input
-                id="githubToken"
-                placeholder="ghp_xxxxxxxxxxxx"
-                type="password"
-                value={githubToken}
-                onChange={(e) => setGithubToken(e.target.value)}
-              />
-              <p className="mt-1 text-xs text-muted-foreground">
-                A GitHub API korlátozza a kérések számát. Token megadásával növelheti a limitet.
-              </p>
-            </div>
-          </div>
+          <RepoInputForm
+            repoUrl={repoUrl}
+            searchPath={searchPath}
+            githubToken={githubToken}
+            isLoading={isLoading}
+            onRepoUrlChange={setRepoUrl}
+            onSearchPathChange={setSearchPath}
+            onGithubTokenChange={setGithubToken}
+            onSearch={handleSearch}
+          />
 
           {error && (
             <Alert variant="destructive">
@@ -187,67 +140,14 @@ const GitHubImporter = ({ onFilesLoad }: GitHubImporterProps) => {
             </Alert>
           )}
 
-          {!error && foundFiles.length > 0 && (
-            <div className="border rounded-md">
-              <div className="p-4 border-b">
-                <div className="flex justify-between items-center">
-                  <h4 className="font-medium flex items-center">
-                    <FolderTree className="mr-2 h-4 w-4" />
-                    Talált JSX fájlok
-                  </h4>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline">{foundFiles.length} fájl</Badge>
-                    <Button variant="outline" size="sm" onClick={selectAllFiles}>
-                      {selectedFiles.length === foundFiles.length ? "Kiválasztás törlése" : "Összes kiválasztása"}
-                    </Button>
-                  </div>
-                </div>
-              </div>
+          <FileList
+            files={foundFiles}
+            selectedFiles={selectedFiles}
+            onFileSelect={toggleFileSelection}
+            onSelectAll={selectAllFiles}
+          />
 
-              <div className="max-h-60 overflow-y-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-12">Kiválasztva</TableHead>
-                      <TableHead>Fájlnév</TableHead>
-                      <TableHead>Útvonal</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {foundFiles.map((file) => (
-                      <TableRow
-                        key={file.url}
-                        className={selectedFiles.some(f => f.url === file.url) ? "bg-muted/40" : ""}
-                        onClick={() => toggleFileSelection(file)}
-                      >
-                        <TableCell>
-                          <input
-                            type="checkbox"
-                            checked={selectedFiles.some(f => f.url === file.url)}
-                            onChange={() => toggleFileSelection(file)}
-                            className="h-4 w-4"
-                          />
-                        </TableCell>
-                        <TableCell className="font-medium">{file.name}</TableCell>
-                        <TableCell className="text-gray-600 text-sm">{file.path}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </div>
-          )}
-
-          <div className="text-sm text-muted-foreground">
-            <p>Példa repository URL-ek:</p>
-            <ul className="list-disc pl-5 space-y-1 mt-1">
-              {exampleRepos.map((url, index) => (
-                <li key={index} className="cursor-pointer hover:underline" onClick={() => setRepoUrl(url)}>
-                  {url}
-                </li>
-              ))}
-            </ul>
-          </div>
+          <ExampleRepos repos={exampleRepos} onSelect={setRepoUrl} />
         </div>
       </CardContent>
       <CardFooter>
