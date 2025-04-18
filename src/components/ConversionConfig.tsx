@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -19,21 +18,21 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { ConversionConfig as ConfigType } from "@/lib/types";
+import { ConversionConfig as ConversionConfigType } from "@/lib/types";
 
 interface ConversionConfigProps {
-  onChange: (config: ConfigType) => void;
-  defaultConfig?: ConfigType;
+  onChange: (config: ConversionConfigType) => void;
+  defaultConfig?: ConversionConfigType;
 }
 
 const ConversionConfig = ({
   onChange,
   defaultConfig = { conversionLevel: "standard" }
 }: ConversionConfigProps) => {
-  const [config, setConfig] = useState<ConfigType>(defaultConfig);
+  const [config, setConfig] = useState<ConversionConfigType>(defaultConfig);
   const [activeTab, setActiveTab] = useState<string>("basic");
 
-  const updateConfig = (updates: Partial<ConfigType>) => {
+  const updateConfig = (updates: Partial<ConversionConfigType>) => {
     const newConfig = { ...config, ...updates };
     setConfig(newConfig);
     onChange(newConfig);
@@ -66,7 +65,7 @@ const ConversionConfig = ({
                 <Select
                   value={config.conversionLevel}
                   onValueChange={(value) => 
-                    updateConfig({ conversionLevel: value as ConfigType["conversionLevel"] })
+                    updateConfig({ conversionLevel: value as ConversionConfigType["conversionLevel"] })
                   }
                 >
                   <SelectTrigger id="conversionLevel">

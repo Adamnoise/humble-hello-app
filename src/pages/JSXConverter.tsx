@@ -1,8 +1,7 @@
-
 import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ConversionConfig, ConversionErrorDetails } from "@/lib/types";
+import { ConversionConfig as ConversionConfigType, ConversionErrorDetails } from "@/lib/types";
 import FileUploader from "@/components/FileUploader";
 import BatchUploader from "@/components/BatchUploader";
 import GitHubImporter from "@/components/GitHubImporter"; 
@@ -22,7 +21,7 @@ const JSXConverterPage = () => {
   const [importedFiles, setImportedFiles] = useState<{ name: string; content: string }[]>([]);
   const [selectedFileIndex, setSelectedFileIndex] = useState<number>(0);
   const [errors, setErrors] = useState<ConversionErrorDetails[]>([]);
-  const [config, setConfig] = useState<ConversionConfig>({
+  const [config, setConfig] = useState<ConversionConfigType>({
     conversionLevel: "standard",
   });
   
