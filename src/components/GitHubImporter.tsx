@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { fetchAllJsxFiles, fetchFileContent, parseGitHubUrl } from "@/lib/utils/githubFetcher";
 import { Button } from "@/components/ui/button";
@@ -33,22 +32,21 @@ const GitHubImporter = ({ onFilesLoad }: GitHubImporterProps) => {
 
   const handleSearch = async () => {
     if (!repoUrl) return;
-    
+
     setIsLoading(true);
     setError(null);
     setFoundFiles([]);
-    
+
     try {
       const { owner, repo, path } = parseGitHubUrl(repoUrl);
       const basePath = path || searchPath;
-      
-      // Save token if provided
+
       if (githubToken) {
         localStorage.setItem('github_token', githubToken);
       }
-      
+
       const files = await fetchAllJsxFiles(owner, repo, basePath);
-      
+
       if (files.length === 0) {
         setError(`Nem található JSX fájl a megadott útvonal alatt: ${basePath || "/"}`);
       } else {
@@ -57,10 +55,9 @@ const GitHubImporter = ({ onFilesLoad }: GitHubImporterProps) => {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Hiba történt a GitHub repository keresése közben";
       setError(errorMessage);
-      
-      // Handle rate limit errors specially
-      if (errorMessage.includes("rate limit")) {
-        toast.error("GitHub API ratelimit elérve. Kérjük, próbálja később vagy adjon meg egy GitHub tokent.");
+
+      if (errorMessage.includes("rate limit") || errorMessage.includes("403")) {
+        toast.error("GitHub API ratelimit elérve vagy nincs jogosultság. Kérjük, próbálja később vagy adjon meg egy GitHub tokent.");
       }
     } finally {
       setIsLoading(false);
@@ -85,12 +82,12 @@ const GitHubImporter = ({ onFilesLoad }: GitHubImporterProps) => {
 
   const handleImport = async () => {
     if (selectedFiles.length === 0) return;
-    
+
     setIsFetching(true);
-    
+
     try {
       const importedFiles = [];
-      
+
       for (const file of selectedFiles) {
         const content = await fetchFileContent(file.url);
         importedFiles.push({
@@ -98,7 +95,7 @@ const GitHubImporter = ({ onFilesLoad }: GitHubImporterProps) => {
           content
         });
       }
-      
+
       onFilesLoad(importedFiles);
       toast.success(`${importedFiles.length} JSX fájl sikeresen importálva`);
     } catch (error) {
@@ -109,7 +106,6 @@ const GitHubImporter = ({ onFilesLoad }: GitHubImporterProps) => {
     }
   };
 
-  // Example repository URLs
   const exampleRepos = [
     "https://github.com/Winmix713/gf",
     "https://github.com/Winmix713/gf/tree/main/src/components",
@@ -140,10 +136,7 @@ const GitHubImporter = ({ onFilesLoad }: GitHubImporterProps) => {
                 value={repoUrl}
                 onChange={(e) => setRepoUrl(e.target.value)}
               />
-              <Button
-                onClick={handleSearch}
-                disabled={isLoading || !repoUrl}
-              >
+              <Button onClick={handleSearch} disabled={isLoading || !repoUrl}>
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -165,7 +158,7 @@ const GitHubImporter = ({ onFilesLoad }: GitHubImporterProps) => {
                 onChange={(e) => setSearchPath(e.target.value)}
               />
             </div>
-            
+
             <div className="mt-4">
               <label htmlFor="githubToken" className="text-sm font-medium block mb-1">
                 GitHub Access Token (opcionális, API rate limit növelésére)
@@ -184,10 +177,10 @@ const GitHubImporter = ({ onFilesLoad }: GitHubImporterProps) => {
           </div>
 
           {error && (
-            <Alert variant={error.includes("rate limit") ? "warning" : "destructive"}>
+            <Alert variant="destructive">
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>
-                {error.includes("rate limit") ? "API Limit Elérve" : "Hiba"}
+                {error.includes("rate limit") || error.includes("403") ? "API Limit Elérve" : "Hiba"}
               </AlertTitle>
               <AlertDescription>{error}</AlertDescription>
             </Alert>
@@ -203,11 +196,7 @@ const GitHubImporter = ({ onFilesLoad }: GitHubImporterProps) => {
                   </h4>
                   <div className="flex items-center gap-2">
                     <Badge variant="outline">{foundFiles.length} fájl</Badge>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={selectAllFiles}
-                    >
+                    <Button variant="outline" size="sm" onClick={selectAllFiles}>
                       {selectedFiles.length === foundFiles.length ? "Kiválasztás törlése" : "Összes kiválasztása"}
                     </Button>
                   </div>
@@ -225,7 +214,7 @@ const GitHubImporter = ({ onFilesLoad }: GitHubImporterProps) => {
                   </TableHeader>
                   <TableBody>
                     {foundFiles.map((file) => (
-                      <TableRow 
+                      <TableRow
                         key={file.url}
                         className={selectedFiles.some(f => f.url === file.url) ? "bg-muted/40" : ""}
                         onClick={() => toggleFileSelection(file)}
