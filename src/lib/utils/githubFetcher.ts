@@ -14,7 +14,19 @@
 export async function fetchGitHubContent(owner: string, repo: string, path: string = '') {
   try {
     const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
-    const response = await fetch(apiUrl);
+    // Add authorization token if available in local storage
+    const headers: HeadersInit = {};
+    const githubToken = localStorage.getItem('github_token');
+    if (githubToken) {
+      headers.Authorization = `token ${githubToken}`;
+    }
+    
+    const response = await fetch(apiUrl, { headers });
+    
+    if (response.status === 403) {
+      const rateLimit = response.headers.get('x-ratelimit-remaining') || 'unknown';
+      throw new Error(`GitHub API rate limit reached (${rateLimit} requests remaining). Try again later or provide a GitHub token.`);
+    }
     
     if (!response.ok) {
       throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
@@ -96,9 +108,15 @@ export async function fetchAllJsxFiles(owner: string, repo: string, path: string
             path: item.path
           });
         } else if (item.type === 'dir') {
-          // Recursively fetch files from subdirectory
-          const subFiles = await fetchAllJsxFiles(owner, repo, item.path);
-          files = [...files, ...subFiles];
+          try {
+            // Recursively fetch files from subdirectory
+            const subFiles = await fetchAllJsxFiles(owner, repo, item.path);
+            files = [...files, ...subFiles];
+          } catch (error) {
+            console.warn(`Skipping directory ${item.path} due to error:`, error);
+            // Continue with other directories instead of failing completely
+            continue;
+          }
         }
       }
     }

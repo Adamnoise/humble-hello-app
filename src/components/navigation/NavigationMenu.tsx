@@ -5,7 +5,6 @@ import {
   NavigationMenu, 
   NavigationMenuContent, 
   NavigationMenuItem, 
-  NavigationMenuLink, 
   NavigationMenuList, 
   NavigationMenuTrigger,
   navigationMenuTriggerStyle 
@@ -28,17 +27,16 @@ const MainNavigation: React.FC<MainNavigationProps> = ({ items }) => {
           
           return (
             <NavigationMenuItem key={index}>
-              <Link to={item.href} passHref legacyBehavior>
-                <NavigationMenuLink
-                  className={cn(
-                    navigationMenuTriggerStyle(),
-                    isActive && "bg-primary text-primary-foreground"
-                  )}
-                  aria-current={isActive ? "page" : undefined}
-                >
-                  {item.icon}
-                  <span className="ml-2">{item.text}</span>
-                </NavigationMenuLink>
+              <Link 
+                to={item.href}
+                className={cn(
+                  navigationMenuTriggerStyle(),
+                  isActive && "bg-primary text-primary-foreground"
+                )}
+                aria-current={isActive ? "page" : undefined}
+              >
+                {item.icon}
+                <span className="ml-2">{item.text}</span>
               </Link>
             </NavigationMenuItem>
           );

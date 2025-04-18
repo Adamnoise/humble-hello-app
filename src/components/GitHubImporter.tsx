@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Loader2, Github, FolderTree } from "lucide-react";
+import { Loader2, Github, FolderTree, AlertTriangle } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -15,7 +15,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface GitHubImporterProps {
@@ -30,6 +29,7 @@ const GitHubImporter = ({ onFilesLoad }: GitHubImporterProps) => {
   const [foundFiles, setFoundFiles] = useState<{ name: string; url: string; path: string }[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<{ name: string; url: string; path: string }[]>([]);
   const [isFetching, setIsFetching] = useState(false);
+  const [githubToken, setGithubToken] = useState(localStorage.getItem('github_token') || "");
 
   const handleSearch = async () => {
     if (!repoUrl) return;
@@ -42,6 +42,11 @@ const GitHubImporter = ({ onFilesLoad }: GitHubImporterProps) => {
       const { owner, repo, path } = parseGitHubUrl(repoUrl);
       const basePath = path || searchPath;
       
+      // Save token if provided
+      if (githubToken) {
+        localStorage.setItem('github_token', githubToken);
+      }
+      
       const files = await fetchAllJsxFiles(owner, repo, basePath);
       
       if (files.length === 0) {
@@ -50,7 +55,13 @@ const GitHubImporter = ({ onFilesLoad }: GitHubImporterProps) => {
         setFoundFiles(files);
       }
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Hiba történt a GitHub repository keresése közben");
+      const errorMessage = error instanceof Error ? error.message : "Hiba történt a GitHub repository keresése közben";
+      setError(errorMessage);
+      
+      // Handle rate limit errors specially
+      if (errorMessage.includes("rate limit")) {
+        toast.error("GitHub API ratelimit elérve. Kérjük, próbálja később vagy adjon meg egy GitHub tokent.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -154,12 +165,30 @@ const GitHubImporter = ({ onFilesLoad }: GitHubImporterProps) => {
                 onChange={(e) => setSearchPath(e.target.value)}
               />
             </div>
+            
+            <div className="mt-4">
+              <label htmlFor="githubToken" className="text-sm font-medium block mb-1">
+                GitHub Access Token (opcionális, API rate limit növelésére)
+              </label>
+              <Input
+                id="githubToken"
+                placeholder="ghp_xxxxxxxxxxxx"
+                type="password"
+                value={githubToken}
+                onChange={(e) => setGithubToken(e.target.value)}
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                A GitHub API korlátozza a kérések számát. Token megadásával növelheti a limitet.
+              </p>
+            </div>
           </div>
 
           {error && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Hiba</AlertTitle>
+            <Alert variant={error.includes("rate limit") ? "warning" : "destructive"}>
+              <AlertTriangle className="h-4 w-4" />
+              <AlertTitle>
+                {error.includes("rate limit") ? "API Limit Elérve" : "Hiba"}
+              </AlertTitle>
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
