@@ -1,6 +1,6 @@
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import JSXConverterPage from './pages/JSXConverter';
+import JSXConverterPage from './features/jsxConverter/JsxConverterPage';
 
 function App() {
   return (

@@ -42,22 +42,37 @@ const FileUploader = ({ onFileUpload }: FileUploaderProps) => {
           ? "border-primary/80 bg-primary/10"
           : "border-muted bg-card/50 hover:bg-card hover:border-primary/50"
       )}
+      role="button"
+      tabIndex={0}
+      aria-label="Drop JSX file here or click to select file"
     >
-      <input {...getInputProps()} />
+      <input {...getInputProps()} aria-label="File input" />
       <div className="flex flex-col items-center text-center mb-4">
         {isDragging ? (
-          <FileCode className="h-12 w-12 text-primary mb-4" />
+          <FileCode 
+            className="h-12 w-12 text-primary mb-4" 
+            aria-hidden="true" 
+          />
         ) : (
-          <Upload className="h-12 w-12 text-muted-foreground mb-4" />
+          <Upload 
+            className="h-12 w-12 text-muted-foreground mb-4" 
+            aria-hidden="true" 
+          />
         )}
         <p className="text-lg font-medium mb-1">
-          Drag & drop your JSX file here
+          Drop your JSX file here
         </p>
         <p className="text-sm text-muted-foreground mb-4">
-          Only .jsx files are accepted
+          Only .jsx files are supported
         </p>
       </div>
-      <Button type="button" onClick={open} variant="outline" size="sm">
+      <Button 
+        type="button" 
+        onClick={open} 
+        variant="outline" 
+        size="sm"
+        aria-label="Browse for JSX files"
+      >
         Browse File
       </Button>
     </div>

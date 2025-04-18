@@ -1,5 +1,5 @@
+
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
@@ -39,11 +39,11 @@ const ConversionConfig = ({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Konverziós beállítások</CardTitle>
+    <Card className="h-full">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg">Conversion Settings</CardTitle>
         <CardDescription>
-          A JSX-TSX konverzió testreszabása a projekt igényei szerint
+          Customize JSX-TSX conversion for your project
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -52,16 +52,16 @@ const ConversionConfig = ({
           onValueChange={setActiveTab}
           className="space-y-4"
         >
-          <TabsList className="grid grid-cols-3">
-            <TabsTrigger value="basic">Alap</TabsTrigger>
-            <TabsTrigger value="advanced">Haladó</TabsTrigger>
-            <TabsTrigger value="naming">Elnevezések</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="basic">Basic</TabsTrigger>
+            <TabsTrigger value="advanced">Advanced</TabsTrigger>
+            <TabsTrigger value="naming">Naming</TabsTrigger>
           </TabsList>
 
           <TabsContent value="basic" className="space-y-4">
             <div className="space-y-4">
               <div>
-                <Label htmlFor="conversionLevel">Konverziós szint</Label>
+                <Label htmlFor="conversionLevel">Conversion Level</Label>
                 <Select
                   value={config.conversionLevel}
                   onValueChange={(value) => 
@@ -69,17 +69,17 @@ const ConversionConfig = ({
                   }
                 >
                   <SelectTrigger id="conversionLevel">
-                    <SelectValue placeholder="Válassz szintet" />
+                    <SelectValue placeholder="Select level" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="basic">
-                      Alapszintű - Egyszerű típuskonverzió
+                      Basic - Simple type conversion
                     </SelectItem>
                     <SelectItem value="standard">
-                      Standard - Teljes komponens típusok
+                      Standard - Full component typing
                     </SelectItem>
                     <SelectItem value="advanced">
-                      Haladó - Hook optimalizáció és részletes típusok
+                      Advanced - Hook optimization & detailed types
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -94,7 +94,7 @@ const ConversionConfig = ({
                   }
                 />
                 <Label htmlFor="preserveFormatting">
-                  Formázás megőrzése
+                  Preserve formatting
                 </Label>
               </div>
             </div>
@@ -109,7 +109,7 @@ const ConversionConfig = ({
                   updateConfig({ includeJSDoc: checked })
                 }
               />
-              <Label htmlFor="includeJSDoc">JSDoc kommentek megőrzése</Label>
+              <Label htmlFor="includeJSDoc">Preserve JSDoc comments</Label>
             </div>
           </TabsContent>
 
@@ -123,14 +123,14 @@ const ConversionConfig = ({
                 }
               />
               <Label htmlFor="customNaming">
-                Egyedi interfész elnevezési konvenciók
+                Custom interface naming conventions
               </Label>
             </div>
 
             {config.customInterfaceNaming && (
               <div className="grid grid-cols-2 gap-4 pt-2">
                 <div>
-                  <Label htmlFor="prefix">Interfész előtag</Label>
+                  <Label htmlFor="prefix">Interface prefix</Label>
                   <Input
                     id="prefix"
                     value={config.interfacePrefix || ""}
@@ -141,7 +141,7 @@ const ConversionConfig = ({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="suffix">Interfész utótag</Label>
+                  <Label htmlFor="suffix">Interface suffix</Label>
                   <Input
                     id="suffix"
                     value={config.interfaceSuffix || "Props"}
